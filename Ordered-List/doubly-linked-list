@@ -1,0 +1,150 @@
+
+class Node:  # Node for use with doubly-linked list
+    def __init__(self, item):
+        self.item = item
+        self.next = None
+        self.prev = None
+
+    def __eq__(self, other):
+        return self.item == other.item
+
+    def __lt__(self, other):
+        return self.item < other.item
+
+    def __gt__(self, other):
+        return self.item > other.item
+
+
+# A doubly-linked ordered list of items, from lowest (head of list) to highest (tail of list)
+class OrderedList:
+    def __init__(self):
+        self.head = self.tail = None
+
+    # Returns true if the list is empty, false otherwise
+    # OrderedList -> Boolean
+    def is_empty(self):
+        return self.head is None
+
+    # Adds an item to OrderedList in proper location based on ordering of list, and returns True
+    # OrderedList item -> Boolean
+    def add(self, item):
+        new = Node(item)
+        if self.head is None:  # if empty
+            self.head = new
+            return True
+        elif self.head > new:  # insert at beginning
+            new.next = self.head
+            self.head = new
+            return True
+        else:  # insert in middle
+            current = self.head
+            while current.next is not None and current.next < new:
+                if current == new:  # if node already exists
+                    return False
+                current = current.next
+            new.next = current.next
+            if current.next is not None:  # if not at end
+                new.next.prev = new
+            current.next = new
+            new.prev = current
+            return True
+
+    # Removes the first occurrence of an item from OrderedList. If item is removed returns True
+    # OrderedList item -> Boolean
+    def remove(self, item):
+        found = False
+        current = self.head
+        previous = None
+        while current.next is not None:
+            if current.item == item:
+                found = True
+                break
+            previous = current
+            current = current.next
+        if previous is None:
+            self.head = current.next
+            found = True
+        else:
+            previous.next = current.next
+        return found
+
+    # Finds and returns the index of a given value
+    # OrderedList item -> int
+    def index(self, item):
+        index = 0
+        current = self.head
+        while current is not None:
+            if current.item == item:
+                return index
+            current = current.next
+            index += 1
+        return None
+
+
+    # Removes and returns item at index
+    # OrderedList int -> item
+    def pop(self, index):
+        if index < 0 or index >= self.size():
+            raise IndexError("Improper index.")
+        count = 0
+        previous = None
+        current = self.head
+        while current.next is not None:
+            if count == index:
+                break
+            count += 1
+            previous = current
+            current = current.next
+        if previous is None:
+            self.head = current.next
+        else:
+            previous.next = current.next
+        return current.item
+
+    # Searches OrderedList for item, returns True if item is in list, False otherwise
+    # OrderedList item -> Boolean
+    def get_search(self, node, item):
+        while node is not None:
+            if node.item == item:
+                return True
+            return self.get_search(node.next, item)
+        return False
+
+    # Calls get_search function
+    # OrderedList item -> Boolean
+    def search(self, item):
+        return self.get_search(self.head, item)
+
+
+    # Returns Python list representation of OrderedList
+    def python_list(self):
+        l1 = []
+        current = self.head
+        while current is not None:
+            l1.append(current.item)
+            current = current.next
+        return l1
+
+    # Returns a reversed Python list representation of OrderedList using recursion
+    # OrderedList
+    def reverse(self, l1):
+        if len(l1) == 0:
+            return []
+        return [l1[-1]] + self.reverse(l1[:-1])
+
+    # Wrapper function for reverse
+    # OrderedList -> List
+    def python_list_reversed(self):
+        return self.reverse(self.python_list())
+
+    # Returns the number of items contained in list
+    # OrderedList -> int
+    def get_size(self, node):
+        if (not node):
+            return 0
+        return 1 + self.get_size(node.next)
+
+    # Wrapper function for get_size
+    # OrderedList -> int
+    def size(self):
+        return self.get_size(self.head)
