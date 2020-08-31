@@ -1,0 +1,69 @@
+
+# Implements an efficient last-in first-out Abstract Data Type using a Python List
+class StackArray:
+
+
+# Capacity is an int that describes the maximum number of items in the array
+# Items is a list that holds all of the items in the array
+# Num_items is an int that keeps track of how many items have been added
+
+# Creates an empty stack with a capacity
+# Obj int -> None
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.items = [None] * capacity
+        self.num_items = 0
+
+
+# Determines if stack is empty
+# Obj -> Boolean
+    def is_empty(self):
+        if self.num_items==0:
+            return True
+        return False
+
+# Determines if stack is full
+# Obj -> Boolean
+    def is_full(self):
+        if self.num_items==self.capacity:
+            return True
+        return False
+
+# Adds an item to a stack
+# Obj item -> None
+    def push(self, item):
+        if self.is_full()==True:
+            raise IndexError("Stack is full.")
+        else:
+            self.num_items += 1
+            self.items[self.num_items-1]=item
+
+#Val is an item that represents the value being removed from the list
+# Removes most recent item from list
+# Obj -> item
+    def pop(self):
+        if self.is_empty()==False:
+            val=self.items[self.num_items-1]
+            self.items[self.num_items-1]=None
+            self.num_items-=1
+            return val
+        else:
+            raise IndexError("Stack is empty.")
+
+
+
+# Returns next item to be popped
+# Obj -> item
+    def peek(self):
+        if self.is_empty()==False:
+            return self.items[self.num_items-1]
+        else:
+            raise IndexError("Stack is empty.")
+
+
+# Finds the number of items
+# Obj -> Int
+    def size(self):
+        return self.num_items
+
+
