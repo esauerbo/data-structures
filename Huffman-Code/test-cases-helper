@@ -1,0 +1,99 @@
+
+import unittest
+import filecmp
+from huffman import *
+
+class TestList(unittest.TestCase):
+    def test__lt__(self):
+        n1 = HuffmanNode(97, 5)
+        n2 = HuffmanNode(98, 5)
+        self.assertTrue(n1.__lt__(n2))
+        n3 = HuffmanNode(107, 5)
+        n4 = HuffmanNode(106, 5)
+        self.assertFalse(n3.__lt__(n4))
+        n5 = HuffmanNode(10, 3)
+        n6 = HuffmanNode(9, 9)
+        self.assertTrue(n5.__lt__(n6))
+
+    def test_create_code_helper(self):
+        tup = cnt_freq("file1.txt")
+        freqlist = tup[0]
+        hufftree = create_huff_tree(freqlist)
+        l1 = [""]*256
+        create_code_helper(hufftree, "", l1)
+        self.assertEqual(l1[ord('d')], '1')
+        self.assertEqual(l1[ord('a')], '0000')
+        self.assertEqual(l1[ord('f')], '0001')
+
+    def test_create_header(self):
+        tup = cnt_freq("file1.txt")
+        l1 = tup[0]
+        self.assertEqual(create_header(l1), '97 2 98 4 99 8 100 16 102 2\n')
+        l2 = [0] * 256
+        l2[15:20] = [6, 0, 0, 0, 0]
+        self.assertEqual(create_header(l2), '15 6\n')
+
+
+    def test_create_out_string(self):
+        tup = cnt_freq("file1.0.txt")
+        freqlist = tup[0]
+        text = tup[1]
+        root_node = create_huff_tree(freqlist)
+        codes = create_code(root_node)
+        self.assertEqual(create_out_string(text, codes), '11011011000011011010011010011')
+
+    def test_read_encoded(self):
+        huffman_encode("file1.txt", "file1_out.txt")
+        encode_tup = parse_header("file1_out.txt")
+        encode_freq_list = encode_tup[0]
+        encode_code = encode_tup[1]
+        tup = cnt_freq("file1.txt")
+        freq_list = tup[0]
+        text = tup[1]
+        huff_tree = create_huff_tree(freq_list)
+        codes = create_code(huff_tree)
+        out_str = create_out_string(text, codes)
+        self.assertEqual(encode_freq_list, freq_list)
+        self.assertEqual(encode_code, out_str)
+
+        huffman_encode("file2.txt", "file2_out_with_header.txt")
+        encode_tup1 = parse_header("file1_out.txt")
+        encode_freq_list1 = encode_tup1[0]
+        encode_code1 = encode_tup1[1]
+        tup1 = cnt_freq("file2.txt")
+        freq_list1 = tup1[0]
+        text1 = tup1[1]
+        huff_tree1 = create_huff_tree(freq_list1)
+        codes1 = create_code(huff_tree1)
+        out_str1 = create_out_string(text1, codes1)
+        self.assertEqual(encode_freq_list1, freq_list1)
+        self.assertEqual(encode_code1, out_str1)
+
+    def test_traverse_tree(self):
+        freqlist = cnt_freq("file1.txt")[0]
+        hufftree = create_huff_tree(freqlist)
+        self.assertEqual(hufftree.freq, 32)
+        self.assertEqual(hufftree.char, ord('a'))
+        left = hufftree.left
+        self.assertEqual(left.freq, 16)
+        self.assertEqual(left.char, ord('a'))
+        right = hufftree.right
+        self.assertEqual(right.freq, 16)
+        self.assertEqual(right.char, ord('d'))
+
+        codes = create_code(hufftree)
+        code = create_out_string(cnt_freq("file1.txt")[1], codes)
+        traverse_tree(hufftree, code)
+
+
+
+
+
+
+
+
+
+
+
+if __name__ == '__main__':
+   unittest.main()
