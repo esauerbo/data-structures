@@ -1,0 +1,149 @@
+
+# array is a Python List that will be sorted
+# Performs a quick sort with the first element always chosen as pivot
+# List -> int
+def quicksort_first(array):
+    return _quicksort_first(array, 0, len(array)-1)
+
+# first_index is an int that starts at zero, used to determine pivot and partition
+# last_index is an int that starts as the last item, used to determine pivot and partition
+# Helper function to quicksort_first
+# List -> int
+def _quicksort_first(array, first_index, last_index):
+    count = 0
+    if first_index < last_index:
+        p, count = partition_first(array, first_index, last_index)
+        count+=_quicksort_first(array, first_index, p-1)
+        count+=_quicksort_first(array, p+1, last_index)
+    return count
+
+# min is an int that starts as first
+# Places pivot in sorted array in linear time
+# List -> int
+def partition_first(array, first, last):
+    count = 0
+    pivot = array[first]
+    left = first + 1
+    right = last
+    while True:
+        # right moves backward until it either crosses left or is less than the pivot
+        while left <= right and array[right] >= pivot:
+            count += 1
+            right-=1
+        # left moves forward until it either crosses right or is greater than the pivot
+        while left <= right and array[left] <= pivot:
+            count += 1
+            left+=1
+        # if right crosses left, swap low and high values
+        if left <= right:
+            count += 1
+            array[left], array[right] = array[right], array[left]
+        # if right crosses left, stop loop
+        else:
+            break
+    # swap the pivot with the right
+    array[first], array[right] = array[right], array[first]
+    return right, count # returns the index of the new pivot and count
+
+# Performs a quicksort with the median of first, middle, and last as pivot
+# List -> int
+def quicksort_med(array):
+    return _quicksort_med(array, 0, len(array))
+
+
+def _quicksort_med(array, first_index, last_index):
+    count = 0
+    if first_index < last_index:
+        p, count = partition_med(array, first_index, last_index)
+        count+=_quicksort_med(array, first_index, p)
+        count+=_quicksort_med(array, p+1, last_index)
+    return count
+
+
+def partition_med(array, first, last):
+    count = 0
+    med = find_median(array, first, last-1)
+    left = first + 1
+    if (array[med] - array[last-1]) * (array[first] - array[med]) >= 0:
+        array[first], array[med] = array[med], array[first]
+    elif (array[last - 1] - array[med]) * (array[first] - array[last - 1]) >= 0:
+        array[first], array[last - 1] = array[last - 1], array[first]
+    pivot = array[first]
+    for right in range(first, last):
+        count+=1
+        if pivot > array[right]:
+            array[left], array[right] = array[right], array[left]
+            left = left + 1
+    array[first], array[left-1] = array[left-1], array[first]
+    return left - 1, count
+
+# Returns the index of the median value out of the first, last, and middle values
+# List int int -> int
+def find_median(array, first_index, last_index):
+    mid_index = (first_index + last_index) // 2
+    first = array[first_index]
+    mid = array[mid_index]
+    last = array[last_index]
+    if first <= mid <= last:
+        return mid_index
+    if last <= mid <= first:
+        return mid_index
+    if first <= last <= mid:
+        return last_index
+    if mid <= last <= first:
+        return first_index
+    return first_index
+
+import unittest
+from sorts import *
+import random
+import time
+
+
+class TestLab4(unittest.TestCase):
+    def test_quicksort_first(self):
+        array = [29, 99, 27, 41, 66, 28, 44, 78, 87, 19, 31, 76, 58, 88, 83, 97, 12, 21, 44]
+        quicksort_first(array)
+        array2 = [12, 19, 21, 27, 28, 29, 31, 41, 44, 44, 58, 66, 76, 78, 83, 87, 88, 97, 99]
+        self.assertEqual(array, array2)
+        l1 = [8, 4, 2, 2, 1, 7, 10, 5]
+        quicksort_first(l1)
+        l2 = [1, 2, 2, 4, 5, 7, 8, 10]
+        self.assertEqual(l1, l2)
+        l3 = [24, 5, -1000, 32, 76, 0, 1, 1, 343, 678]
+        quicksort_first(l3)
+        l4 = [-1000, 0, 1, 1, 5, 24, 32, 76, 343, 678]
+        self.assertEqual(l3, l4)
+
+    def test_quicksort_med(self):
+        array = [29, 99, 27, 41, 66, 28, 44, 78, 87, 19, 31, 76, 58, 88, 83, 97, 12, 21, 44]
+        quicksort_med(array)
+        array2= [12, 19, 21, 27, 28, 29, 31, 41, 44, 44, 58, 66, 76, 78, 83, 87, 88, 97, 99]
+        self.assertEqual(array, array2)
+        l1 =  [8, 4, 2, 2, 1, 7, 10, 5]
+        quicksort_med(l1)
+        l2 = [1, 2, 2, 4, 5, 7, 8, 10]
+        self.assertEqual(l1, l2)
+        l3 = [24, 5, -1000, 32, 76, 0, 1, 1, 343, 678]
+        quicksort_med(l3)
+        l4 = [-1000, 0, 1, 1, 5, 24, 32, 76, 343, 678]
+        self.assertEqual(l3, l4)
+
+
+    def test_find_median(self):
+        array = [29, 99, 27, 41, 66, 28, 44, 78, 87, 19, 31, 76, 58, 88, 83, 97, 12, 21, 44]
+        first = 0
+        last = len(array)-1
+        self.assertEqual(find_median(array, first, last), 0)
+        first = 2
+        last = len(array)-1
+        self.assertEqual(find_median(array, first, last),10)
+        first = 3
+        last = len(array)-1
+        self.assertEqual(find_median(array, first, last), 3)
+
+
+
+
+
+
