@@ -1,0 +1,75 @@
+# Lab 4: Queue Implementations
+# Emma Sauerborn
+# CPE202-01
+
+class QueueArray:
+# Implements an array-based, efficient first-in first-out Abstract Data Type
+# using a Python array (faked using a List)
+
+
+# Capacity is an int that specifies the number of items held in the array
+# Items can be any python datatype, and are the things held in the array
+# Front is one of the array items, representing the next to be dequeued
+# Tail is one of the array items, representing the last to be dequeued
+# Num_items is an int that represents how many elements in the array are filled
+
+# Creates an empty Queue with a capacity
+# Obj int -> None
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.items = [None]*capacity
+        self.head = -1
+        self.tail = -1
+        self.num_items = 0
+
+
+# Returns True if the Queue is empty, and False otherwise
+# Obj -> Boolean
+    def is_empty(self):
+        return self.num_items==0
+
+
+# Returns True if the Queue is full, and False otherwise
+# Obj -> Boolean
+    def is_full(self):
+        return self.num_items==self.capacity
+
+
+# Adds a new item to the end of the list
+# Obj item -> None
+    def enqueue(self, item):
+        if self.is_full()==True:
+            raise IndexError("Queue is full.")
+        elif self.head==-1:
+            self.head=0
+            self.tail=0
+            self.items[self.tail] = item
+        else:
+            self.tail = (self.tail + 1) % self.capacity
+            self.items[self.tail] = item
+        self.num_items += 1
+
+
+
+# Removes an item from the beginning of the list
+# Obj -> Item
+    def dequeue(self):
+        if self.is_empty() == True:
+            raise IndexError("Queue is empty.")
+        elif self.head==self.tail:
+            temp = self.items[self.head]
+            self.front=-1
+            self.tail=-1
+        else:
+            temp = self.items[self.head]
+            self.head = (self.head + 1) % self.capacity
+        self.num_items-=1
+        return temp
+
+
+# Returns the number of elements currently in the Queue
+# Obj -> int
+    def size(self):
+        return self.num_items
+
+
