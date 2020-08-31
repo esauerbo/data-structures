@@ -1,6 +1,4 @@
-# Lab 4: Queue Implementations
-# Emma Sauerborn
-# CPE202-01
+
 
 class QueueArray:
 # Implements an array-based, efficient first-in first-out Abstract Data Type
