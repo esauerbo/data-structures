@@ -1,0 +1,108 @@
+
+import unittest
+from ordered_list import *
+
+class TestLab5(unittest.TestCase):
+
+    def test_simple(self):
+        t_list = OrderedList()
+        self.assertTrue(t_list.add(10))
+        self.assertEqual(t_list.python_list(), [10])
+        self.assertEqual(t_list.size(), 1)
+        self.assertEqual(t_list.index(10), 0)
+        self.assertTrue(t_list.search(10))
+        self.assertFalse(t_list.is_empty())
+        self.assertEqual(t_list.python_list_reversed(), [10])
+        self.assertTrue(t_list.remove(10))
+        t_list.add(10)
+        self.assertEqual(t_list.pop(0), 10)
+
+    def test_is_empty(self):
+        dll = OrderedList()
+        self.assertTrue(dll.is_empty())
+        dll.add(10)
+        self.assertFalse(dll.is_empty())
+        self.assertEqual(dll.pop(0), 10)
+        self.assertTrue(dll.is_empty())
+
+    def test_add(self):
+        dll = OrderedList()
+        dll.add(10)
+        dll.add(11)
+        dll.add(9)
+        dll.add(5)
+        self.assertEqual(dll.python_list(), [5, 9, 10, 11])
+
+    def test_remove(self):
+        dll = OrderedList()
+        dll.add(10)
+        dll.add(11)
+        dll.add(9)
+        dll.add(5)
+        dll.remove(5)
+        self.assertEqual(dll.python_list(), [9, 10, 11])
+        self.assertEqual(dll.size(), 3)
+        dll.remove(11)
+        self.assertEqual(dll.python_list(), [9, 10])
+        dll.remove(9)
+        self.assertEqual(dll.python_list(), [10])
+        dll.remove(10)
+        self.assertEqual(dll.python_list(), [])
+
+    def test_index(self):
+        dll = OrderedList()
+        dll.add(10)
+        self.assertEqual(dll.index(10), 0)
+        dll.add(9)
+        self.assertEqual(dll.index(10), 1)
+        dll.add(15)
+        self.assertEqual(dll.index(15), 2)
+
+    def test_pop(self):
+        dll = OrderedList()
+        dll.add(10)
+        dll.add(11)
+        dll.add(12)
+        self.assertEqual(dll.pop(2), 12)
+        self.assertEqual(dll.size(), 2)
+        self.assertEqual(dll.pop(1), 11)
+        self.assertEqual(dll.size(), 1)
+        self.assertEqual(dll.pop(0), 10)
+        self.assertEqual(dll.size(), 0)
+        with self.assertRaises(IndexError,msg="Improper index."):
+            dll.pop(0)
+
+    def test_search(self):
+        dll = OrderedList()
+        dll.add(10)
+        dll.add(11)
+        dll.add(12)
+        self.assertTrue(dll.search(10))
+        self.assertFalse(dll.search(16))
+
+    def test_python_list(self):
+        dll = OrderedList()
+        dll.add(10)
+        dll.add(11)
+        dll.add(12)
+        self.assertEqual(dll.python_list(), [10, 11, 12])
+
+    def test_python_list_reversed(self):
+        dll = OrderedList()
+        dll.add(10)
+        dll.add(11)
+        dll.add(12)
+        self.assertEqual(dll.python_list(), [10, 11, 12])
+        self.assertEqual(dll.python_list_reversed(), [12, 11, 10])
+
+    def test_size(self):
+        dll = OrderedList()
+        dll.add(10)
+        dll.add(11)
+        dll.add(12)
+        self.assertEqual(dll.size(), 3)
+        dll.pop(0)
+        self.assertEqual(dll.size(), 2)
+
+if __name__ == '__main__':
+    unittest.main()
