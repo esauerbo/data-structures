@@ -1,0 +1,62 @@
+
+
+import unittest
+import filecmp
+from huffman import *
+
+class TestList(unittest.TestCase):
+   def test_cnt_freq(self):
+      freqlist	= cnt_freq("file1.txt")[0]
+      anslist = [0]*256
+      anslist[97:104] = [2, 4, 8, 16, 0, 2, 0]
+      self.assertListEqual(freqlist[97:104], anslist[97:104])
+      with self.assertRaises(FileNotFoundError):
+         cnt_freq("fjlkda.txt")
+
+
+   def test_create_huff_tree(self):
+      freqlist = cnt_freq("file1.txt")[0]
+      hufftree = create_huff_tree(freqlist)
+
+      self.assertEqual(hufftree.freq, 32)
+      self.assertEqual(hufftree.char, ord('a'))
+      left = hufftree.left
+      self.assertEqual(left.freq, 16)
+      self.assertEqual(left.char, ord('a'))
+      right = hufftree.right
+      self.assertEqual(right.freq, 16)
+      self.assertEqual(right.char, ord('d'))
+
+
+   def test_create_code(self):
+
+      anslist = [0]*256
+      anslist[97:104] = [10, 7, 32, 17, 3, 0, 0]
+      hufftree = create_huff_tree(anslist)
+      codes = create_code(hufftree)
+      print(codes[ord('b')])
+
+   def test_01_encodefile(self):
+      huffman_encode("file1.0.txt", "file1.0_out_with_header.txt")
+      self.assertTrue(filecmp.cmp("file1.0_out_with_header.txt", "file1.0_sol.txt"))
+
+      huffman_encode("multiline.txt", "multiline_out.txt")
+      self.assertTrue(filecmp.cmp("multiline_out.txt", "multiline_sol_with_header.txt"))
+
+      huffman_encode("file2.txt", "file2_out_with_header.txt")
+      self.assertTrue(filecmp.cmp("file2_sol_with_header.txt", "file2_out_with_header.txt"))
+
+   def test_01_decodefile(self):
+      huffman_decode("file2_sol_with_header.txt", "decodefile1.txt")
+      self.assertTrue(filecmp.cmp("decodefile1.txt", "file1.txt"))
+      huffman_decode("file2_sol_with_header.txt", "decodefile2.txt")
+      self.assertTrue(filecmp.cmp("decodefile2.txt", "file2.txt"))
+      huffman_decode("multiline_sol_with_header.txt", "decodemultiline.txt")
+      self.assertTrue(filecmp.cmp("decodemultiline.txt", "multiline.txt"))
+      huffman_decode("file1.0_sol.txt", "decodefile1.0.txt")
+      self.assertTrue(filecmp.cmp("decodefile1.0.txt", "file1.0.txt"))
+
+
+
+if __name__ == '__main__':
+   unittest.main()
