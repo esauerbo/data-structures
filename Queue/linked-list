@@ -1,0 +1,79 @@
+# Lab 4: Queue Implementations
+# Emma Sauerborn
+# CPE202-01
+
+
+# An item can be any python datatype, and are the things held in the array
+# Next is the item following the current item in a list
+# Initializes a Node object with no next item
+# Node item -> None
+class Node:
+    def __init__(self,item):
+        self.next = None
+        self.item = item
+
+
+class QueueLinked:
+# Implements an link-based, efficient first-in first-out Abstract Data Type
+
+
+# Capacity is an int that specifies the number of items held in the linked list
+# Head is an int that represents the index of the first item to be dequeued
+# Num_items is an int that represents how many elements in the list are filled
+# Tail is an int that represents the index of the most recently enqueued item
+
+#Creates an empty Queue with a capacity
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.head = None
+        self.tail = None
+        self.num_items = 0
+
+# Returns True if the Queue is empty, and False otherwise
+# Obj -> Boolean
+    def is_empty(self):
+        return self.num_items==0
+
+# Returns True if the Queue is full, and False otherwise
+# Obj -> Boolean
+    def is_full(self):
+        return self.num_items==self.capacity
+
+# Adds an element to the end of the list
+# Obj item -> None
+    def enqueue(self, item):
+        node = Node(item)
+        if self.is_full()==True:
+            raise IndexError("List is full.")
+        if self.head == None:
+            self.head = node
+        else:
+            self.tail.next = node
+
+        self.tail = node
+        self.tail.next = self.head
+        self.num_items += 1
+
+
+# Removes an item from queue and returns it
+# Obj -> Item
+    def dequeue(self):
+        if self.is_empty()==True:
+            raise IndexError("List is full.")
+        if self.head == self.tail:
+            temp = self.head
+            self.head = None
+            self.tail = None
+        else:
+            temp = self.head
+            self.head = self.head.next
+            self.tail.next = self.head
+        self.num_items -= 1
+        return temp.item
+
+
+
+# Returns the number of elements currently in the Queue
+# Obj -> int
+    def size(self):
+        return self.num_items
