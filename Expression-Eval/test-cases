@@ -1,0 +1,37 @@
+
+import unittest
+from exp_eval import *
+
+class TestCases(unittest.TestCase):
+    def test_postfix_eval(self):
+        self.assertEqual(postfix_eval('5 1 2 + 4 ^ + 3 -'), 83)
+        self.assertEqual(postfix_eval('4 3 2 * + 5 -'), 5)
+        self.assertEqual(postfix_eval('3 4 + 2 * 7 /'), 2)
+        self.assertEqual(postfix_eval('5 7 + 6 2 - *'), 48)
+        self.assertEqual(postfix_eval('4 2 + 3 5 1 - * +'), 18)
+        self.assertEqual(postfix_eval('4 5 7 2 + - *'), -16)
+        self.assertEqual(postfix_eval('9 2 <<'), 36)
+        self.assertEqual(postfix_eval('9 2 >>'), 2)
+        self.assertEqual(postfix_eval('-2 1 +'), -1)
+        with self.assertRaises(ValueError):
+            postfix_eval('2 0 /')
+        with self.assertRaises(PostfixFormatException):
+            postfix_eval('5 3 7 9 + +')
+        with self.assertRaises(PostfixFormatException):
+            postfix_eval('4 2 3 5 1 - + * + *')
+        with self.assertRaises(PostfixFormatException):
+            postfix_eval('5 1 2 $ 4 ^ + 3 -')
+
+    def test_infix_to_postfix(self):
+        self.assertEqual(infix_to_postfix('3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3'), '3 4 2 * 1 5 - 2 3 ^ ^ / + ')
+        self.assertEqual(infix_to_postfix('4 * ( 5 - ( 7 + 2 ) )'), '4 5 7 2 + - * ')
+        self.assertEqual(infix_to_postfix('( 5 + 7 ) * ( 6 - 2 ) '), '5 7 + 6 2 - * ')
+        self.assertEqual(infix_to_postfix('( 4 + 2 ) + ( 3 * ( 5 - 1 ) )'), '4 2 + 3 5 1 - * + ')
+
+    def test_prefix_to_postfix(self):
+        self.assertEqual(prefix_to_postfix('* - 3 / 2 1 - / 4 5 6'), '3 2 1 / - 4 5 / 6 - *')
+        self.assertEqual(prefix_to_postfix('* + 1 2 + 4 5'), '1 2 + 4 5 + *')
+        self.assertEqual(prefix_to_postfix('- 1 / 2 * 3 ^ 4 5'), '1 2 3 4 5 ^ * / -')
+    
+if __name__ == '__main__':
+    unittest.main()
