@@ -1,0 +1,10 @@
+class Node:
+
+# Data can be any python datatype and its the item stored in a given location
+# Next is the next item in the linked list, following 'data'
+
+# Initializes a Node object with no next item
+# Node item -> None
+    def __init__(self, data):
+        self.data = data
+        self.next = None
