@@ -1,0 +1,81 @@
+
+class Node:
+
+# Data can be any python datatype and its the item stored in a given location
+# Next is the next item in the linked list, following 'data'
+
+# Initializes a Node object with no next item
+# Node item -> None
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+
+# Implements an efficient last-in first-out Abstract Data Type using a Linked List
+class StackLinked:
+
+# Capacity is an int that defines the length of the linked list
+# Head can be any python datatype and represents the first value in a linked list
+# num_items is an int and it represents the number of populated values in the list
+
+# Initializes a StackLinked object with a capacity
+# StackLinked int -> None
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.head = None
+        self.num_items = 0
+
+
+# Returns True if the stack is empty, and False otherwise
+# StackLinked -> Boolean
+    def is_empty(self):
+        if self.num_items==0:
+            return True
+        return False
+
+
+# Returns True if the stack is full, and False otherwise
+# StackLinked -> Boolean
+    def is_full(self):
+        if self.num_items==self.capacity:
+            return True
+        return False
+
+
+# Adds an item to a stack
+# StackLinked item -> None
+    def push(self, item):
+        if self.is_full() == True:
+            raise IndexError("Stack is full.")
+        else:
+            node = Node(item)
+            node.next = self.head
+            self.head = node
+            self.num_items+=1
+
+# Removes the most recently added item from a linked list
+# StackLinked -> Node
+    def pop(self):
+        if self.is_empty()==True:
+            raise IndexError("Stack is empty.")
+        else:
+            val = self.head
+            self.head = self.head.next
+            self.num_items-=1
+            return val
+
+# Returns the next Node to be popped
+# StackLinked -> Node
+    def peek(self):
+        if self.is_empty()==True:
+            raise IndexError("Stack is empty.")
+        else:
+            return self.head
+
+
+# Returns the number of populated items in a linked list
+# StackLinked -> int
+    def size(self):
+        return self.num_items
+
+
