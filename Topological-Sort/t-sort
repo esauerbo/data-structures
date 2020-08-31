@@ -1,0 +1,108 @@
+
+# Performs a topological sort on a given input list of verticies
+# List -> String
+def tsort(vertices):
+    if vertices==[]:
+        raise ValueError("Input contains no edges.")
+    if len(vertices)%2 != 0:
+        raise ValueError("Input contains an odd number of tokens.")
+
+    dict = create_dict(vertices) # function call create_dict -> returns dictionary
+    assign_degrees(dict) # function call assign_degrees -> no return value, updates dictionary
+
+    if contains_cycles(dict):
+        raise ValueError("Input contains a cycle.")
+
+    vertex_order = store_order(vertices) # function call store_order -> returns list
+    stack = StackArray(30)
+
+    for vertex in vertex_order:
+        degree = dict[vertex][0]
+        if degree == 0:
+            stack.push(vertex)
+            vertex_order.remove(vertex)
+
+    output = ""
+    while stack.num_items != 0:
+        vertex = stack.pop()
+        output+= vertex+"\n"
+        adjacent = dict[vertex][1:]
+        dict.pop(vertex)
+        for next_vertex in adjacent:
+            dict[next_vertex][0]-=1 # reduce the degree of the next vertex
+            if dict[next_vertex][0] == 0: # if the degree is now zero
+                stack.push(next_vertex) # immediately push the vertex to stack
+
+    return output
+
+
+# Converts a list of incoming edges into a dictionary with each vertex and its edges
+# List -> Dictionary
+def create_dict(vertices):
+    dict = {}
+    for vertex in vertices:
+        if vertex not in dict:
+            dict[vertex] = [0]
+    vertex_pairs = [vertices[x:x + 2] for x in range(0, len(vertices), 2)]
+    for pair in vertex_pairs:
+            dict[pair[0]].append(pair[1])
+    return dict
+
+
+# Stores the vertices in the order they appear in a Python list
+# List -> List
+def store_order(vertices):
+    vertex_order = []
+    for vertex in vertices:
+        if vertex not in vertex_order:
+            vertex_order.append(vertex)
+    return vertex_order
+
+# Traverses a dictionary and assigns each vertex a degree based on its number of incoming edges
+# Dictionary -> None
+def assign_degrees(dict):
+    for vertex in dict:
+        degree = 0
+        for i in dict:
+            list_of_edges = dict[i]
+            for element in list_of_edges:
+                if element == vertex:
+                    degree+=1
+        dict[vertex][0] = degree
+
+
+# Returns true if graph contains cycles, false otherwise
+# Dictionary -> Boolean
+def contains_cycles(dict):
+    cycles = True
+    for vertex in dict:
+        if dict[vertex][0] == 0:
+            cycles = False
+    return cycles
+
+
+def main():
+    '''Entry point for the tsort utility allowing the user to specify
+       a file containing the edge of the DAG'''
+    if len(argv) != 2:
+        print("Usage: python3 tsort.py <filename>")
+        exit()
+    try:
+        f = open(argv[1], 'r')
+    except FileNotFoundError as e:
+        print(argv[1], 'could not be found or opened')
+        exit()
+
+    vertices = []
+    for line in f:
+        vertices += line.split()
+
+    try:
+        result = tsort(vertices)
+        print(result)
+    except Exception as e:
+        print(e)
+
+
+if __name__ == '__main__':
+    main()
