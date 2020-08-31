@@ -1,0 +1,159 @@
+
+import unittest
+
+# Use the imports below to test either your array-based stack
+# or your link-based version
+from stack_array import StackArray
+from stack_linked import StackLinked
+from stack_linked import Node
+
+class TestLab3(unittest.TestCase):
+
+    def test_array_simple(self):
+        stack = StackArray(5)
+        stack.push(0)
+        self.assertFalse(stack.is_empty())
+        self.assertFalse(stack.is_full())
+        self.assertEqual(stack.size(),1)
+
+    def test_array_is_empty(self):
+        stack = StackArray(10)
+        self.assertTrue(stack.is_empty())
+        stack.push('dog')
+        self.assertFalse(stack.is_empty())
+        stack.pop()
+        self.assertTrue(stack.is_empty())
+
+    def test_array_is_full(self):
+        stack = StackArray(5)
+        self.assertFalse(stack.is_full())
+        stack.push('dog')
+        stack.push('dog')
+        stack.push('dog')
+        stack.push('dog')
+        stack.push('dog')
+        self.assertTrue(stack.is_full())
+        stack.pop()
+        stack.pop()
+        stack.pop()
+        stack.pop()
+        stack.pop()
+        self.assertFalse(stack.is_full())
+
+    def test_array_push(self):
+        stack = StackArray(2)
+        stack.push(100)
+        self.assertEqual(stack.items[0], 100)
+        stack.push(200)
+        self.assertEqual(stack.items[1], 200)
+        with self.assertRaises(IndexError):
+            stack.push(10)
+
+    def test_array_pop(self):
+        stack = StackArray(5)
+        with self.assertRaises(IndexError):
+            stack.pop()
+        stack.push(15)
+        stack.push(19)
+        self.assertEqual(stack.pop(), 19)
+        self.assertEqual(stack.pop(), 15)
+
+    def test_array_peek(self):
+        stack = StackArray(3)
+        stack.push('a')
+        stack.push('b')
+        stack.push('c')
+        self.assertEqual(stack.peek(), stack.pop())
+        self.assertEqual(stack.peek(), stack.pop())
+        self.assertEqual(stack.peek(), stack.pop())
+
+    def test_array_size(self):
+        stack = StackArray(5)
+        self.assertEqual(stack.size(), 0)
+        stack.push(1)
+        stack.push(3)
+        self.assertEqual(stack.size(), 2)
+        stack.pop()
+        self.assertEqual(stack.size(), 1)
+
+    def test_linked_simple(self):
+        link = StackLinked(5)
+        link.push(0)
+        self.assertFalse(link.is_empty())
+        self.assertFalse(link.is_full())
+        self.assertEqual(link.size(), 1)
+
+    def test_linked_is_empty(self):
+        link = StackLinked(5)
+        self.assertTrue(link.is_empty())
+        link.push('hello')
+        self.assertFalse(link.is_empty())
+        link.pop()
+        self.assertTrue(link.is_empty())
+
+    def test_linked_is_full(self):
+        link= StackLinked(5)
+        self.assertFalse(link.is_full())
+        link.push(3)
+        link.push(3)
+        link.push(3)
+        link.push(3)
+        link.push(3)
+        self.assertTrue(link.is_full())
+        link.pop()
+        self.assertFalse(link.is_full())
+
+    def test_linked_push(self):
+        link = StackLinked(5)
+        link.push(100)
+        self.assertTrue(link.head.next==None)
+        link.push(200)
+        self.assertEqual(link.head.next.data, 100)
+        link.push(300)
+        self.assertEqual(200, link.head.next.data)
+
+    def test_linked_pop(self):
+        link = StackLinked(5)
+        with self.assertRaises(IndexError):
+            link.pop()
+        link.push('dog')
+        link.push('cat')
+        self.assertEqual(link.pop().data, 'cat')
+        self.assertEqual(link.pop().data, 'dog')
+        self.assertTrue(link.is_empty())
+
+    def test_linked_peek(self):
+        link = StackLinked(5)
+        with self.assertRaises(IndexError):
+            link.peek()
+        link.push(True)
+        link.push(False)
+        link.push('hello')
+        self.assertEqual(link.peek().data, 'hello')
+        link.pop()
+        self.assertEqual(link.peek().data, False)
+        link.pop()
+        self.assertEqual(link.peek().data, True)
+        link.pop()
+        link.push(1)
+        link.push(2)
+        self.assertEqual(link.peek(), link.pop())
+        self.assertEqual(link.peek(), link.pop())
+        self.assertTrue(link.is_empty())
+
+
+    def test_linked_size(self):
+        link = StackLinked(5)
+        self.assertEqual(link.size(), 0)
+        link.push(1)
+        link.push(2)
+        self.assertEqual(link.size(), 2)
+        link.push(3)
+        self.assertEqual(link.size(), 3)
+        link.pop()
+        self.assertEqual(link.size(), 2)
+
+
+
+if __name__ == '__main__':
+    unittest.main()
