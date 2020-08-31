@@ -1,0 +1,131 @@
+# Lab 4: Queue Implementations
+# Emma Sauerborn
+# CPE202-01
+
+import unittest
+from queue_array import *
+from queue_linked import *
+
+class TestCases(unittest.TestCase):
+
+    # test cases for QueueArray
+    def test_array_is_empty(self):
+        array = QueueArray(5)
+        self.assertTrue(array.is_empty())
+        array.enqueue(0)
+        self.assertFalse(array.is_empty())
+        array.dequeue()
+        self.assertTrue(array.is_empty())
+
+    def test_array_is_full(self):
+        array = QueueArray(4)
+        self.assertFalse(array.is_full())
+        array.enqueue(1)
+        array.enqueue(1)
+        array.enqueue(1)
+        array.enqueue(1)
+        self.assertTrue(array.is_full())
+        array.dequeue()
+        self.assertFalse(array.is_full())
+
+        array1 = QueueArray(4)
+        array1.enqueue('a')
+        array1.enqueue('b')
+        array1.enqueue('c')
+        array1.enqueue('d')
+        self.assertTrue(array1.is_full())
+
+    def test_array_enqueue(self):
+        array = QueueArray(5)
+        array.enqueue('g')
+        array.enqueue('h')
+        array.enqueue('i')
+        array.enqueue('j')
+        array.enqueue('k')
+        with self.assertRaises(IndexError):
+            array.enqueue('l')
+        array.dequeue()
+        array.dequeue()
+        array.dequeue()
+        array.enqueue('l')
+        self.assertEqual(array.tail, 0)
+        self.assertEqual(array.head, 3)
+
+    def test_array_dequeue(self):
+        array = QueueArray(5)
+        with self.assertRaises(IndexError):
+            array.dequeue()
+        array.enqueue('a')
+        array.enqueue('b')
+        self.assertEqual(array.dequeue(), 'a')
+        self.assertEqual(array.dequeue(), 'b')
+        self.assertTrue(array.is_empty())
+
+    def test_array_size(self):
+        array = QueueArray(5)
+        array.enqueue('a')
+        self.assertEqual(array.size(), 1)
+        array.dequeue()
+        self.assertEqual(array.size(), 0)
+        array.enqueue('a')
+        array.enqueue('b')
+        self.assertEqual(array.size(), 2)
+
+    # test cases for QueueLinked
+    def test_linked_is_empty(self):
+        linked = QueueLinked(5)
+        self.assertTrue(linked.is_empty())
+        linked.enqueue(0)
+        self.assertFalse(linked.is_empty())
+        linked.dequeue()
+        self.assertTrue(linked.is_empty())
+
+    def test_linked_is_full(self):
+        linked = QueueLinked(4)
+        self.assertFalse(linked.is_full())
+        linked.enqueue(1)
+        linked.enqueue(1)
+        linked.enqueue(1)
+        linked.enqueue(1)
+        self.assertTrue(linked.is_full())
+        linked.dequeue()
+        self.assertFalse(linked.is_full())
+
+    def test_linked_enqueue(self):
+        linked = QueueLinked(4)
+        linked.enqueue('a')
+        linked.enqueue('b')
+        linked.enqueue('c')
+        linked.enqueue('d')
+        self.assertEqual(linked.tail.item, 'd')
+        self.assertEqual(linked.head.item, 'a')
+        print(linked.is_full())
+        with self.assertRaises(IndexError):
+            linked.enqueue('e')
+        linked.dequeue()
+        linked.dequeue()
+        linked.enqueue('e')
+        self.assertEqual(linked.tail.item, 'e')
+
+    def test_linked_dequeue(self):
+        linked = QueueLinked(5)
+        with self.assertRaises(IndexError):
+            linked.dequeue()
+        linked.enqueue('a')
+        linked.enqueue('b')
+        self.assertEqual(linked.dequeue(), 'a')
+        self.assertEqual(linked.dequeue(), 'b')
+        self.assertTrue(linked.is_empty())
+
+    def test_linked_size(self):
+        linked = QueueLinked(5)
+        linked.enqueue('a')
+        self.assertEqual(linked.size(), 1)
+        linked.dequeue()
+        self.assertEqual(linked.size(), 0)
+        linked.enqueue('a')
+        linked.enqueue('b')
+        self.assertEqual(linked.size(), 2)
+
+if __name__ == '__main__':
+    unittest.main()
