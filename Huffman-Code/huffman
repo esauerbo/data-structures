@@ -1,0 +1,246 @@
+
+
+from ordered_list import *
+
+# Represents either a leaf or an internal node of a Huffman tree
+class HuffmanNode:
+
+    # char is an int that represents the ascii code of a character
+    # freq is an int that represents the number of occurrences of a character
+    # left is a HuffmanNode object that represents the node to the left of self
+    # right is a HuffmanNode object that represents the node to the right of self
+    def __init__(self, char, freq):
+        self.char = char
+        self.freq = freq
+        self.left = None
+        self.right = None
+
+    def set_code(self, code):
+        self.code = code
+
+    def set_left(self, node):
+        self.left = node
+
+    def set_right(self, node):
+        self.right = node
+
+    def __repr__(self):
+        return ("c{}/f{}".format(self.char, self.freq))
+
+    # Returns true if self should come before other when added to OrderedList
+    # HuffmanNode HuffmanNode -> Boolean
+    def __lt__(self, other):
+        # if freq of self is less than freq of other return True
+        # if freq of self is greater than freq of other return False
+        # if freq of self is equal to freq of other:
+            # if ascii code of self is less than ascii code of other return True
+        # return False
+        if self.freq < other.freq:
+            return True
+        if self.freq > other.freq:
+            return False
+        if self.freq == other.freq:
+            if self.char < other.char :
+                return True
+            return False
+
+# Reads in input text and writes code to output file
+# File File -> None
+def huffman_encode(in_file, out_file):
+    tup = cnt_freq(in_file)
+    list_of_freqs = tup[0]
+    text = tup[1]
+    huff_tree = create_huff_tree(list_of_freqs)
+    codes = create_code(huff_tree)
+    out_str = create_out_string(text,codes)
+    fout = open(out_file, 'w')
+    fout.write(create_header(list_of_freqs))
+    fout.write(out_str)
+    fout.close()
+
+# Driver function for decoding, takes input text and write decoded message to output
+# File File -> None
+def huffman_decode(encoded_file, decoded_file):
+    encode_tup = parse_header(encoded_file)
+    freq_list = encode_tup[0]
+    code = encode_tup[1]
+    huff_tree = create_huff_tree(freq_list)
+    fout = open(decoded_file, 'w')
+    fout.write(traverse_tree(huff_tree, code))
+    fout.close()
+
+# filename is a string that represents the name of the file
+# text is a string that holds all the characters in the file
+# freq_list is a list that holds the occurrences of each character
+def cnt_freq(filename):  # File -> int
+# Opens text file and counts the frequency of all characters within the file
+    # open file for reading
+    # initialize list with 256 items
+    # reads the text and assigns to string
+    # close file
+    # traverse string, for each item in the string:
+    # find ascii code
+    # increment list at the index of the ascii code
+    # return list
+    text = ''
+    with open(filename, 'r') as fin:
+        temp = fin.readlines()
+        text+=text.join(temp)
+    freq_list = [0] * 256
+    for char in text:
+        freq_list[ord(char)] += 1
+    return freq_list, text
+
+# huff_tree is an OrderedList that holds all of the HuffmanNodes
+# nodes 1 and 2 are the first two items in the huff_tree; the items with lowest frequency
+# subroot is the result of merging nodes 1 and 2
+def create_huff_tree(freq_list): # List -> OrderedList
+# Creates a Huffman Tree out of a list of frequencies
+    # if freq_list is empty, return None
+    # initalize OrderedList, traverse freq_list
+    # for each index, create a HuffmanNode with char as index and
+    # the value at index as freq, and add to OrderedList
+    # while there are more items in OrderedList:
+    # find two nodes with lowest frequency in OrderedList
+    # remove and return them
+    # create a new node based on the two lower values:
+        # set freq as the two frequencies added together, set char as the lower of the two chars
+        # set left as the smaller frequency, set right as the higher frequency
+        # if they have the same frequency, left is smaller char
+    # insert parent into OrderedList
+    if all(y == 0 for y in freq_list):
+        return None
+    huff_tree = OrderedList()
+    for ch in range(len(freq_list)):
+        if freq_list[ch]>0:
+            huff_node = HuffmanNode(ch, freq_list[ch])
+            huff_tree.add(huff_node)
+    while huff_tree.size()>1:
+        node1 = huff_tree.pop(0)
+        node2 = huff_tree.pop(0)
+        if node1.char < node2.char:
+            subroot = HuffmanNode(node1.char, node1.freq + node2.freq)
+        else:
+            subroot = HuffmanNode(node2.char, node1.freq + node2.freq)
+        if node1 < node2:
+            subroot.left = node1
+            subroot.right = node2
+        else:
+            subroot.left = node2
+            subroot.right = node1
+            print(subroot.right)
+            print(subroot.left)
+        huff_tree.add(subroot)
+    return huff_tree.pop(0)
+
+
+# root_node is the current root node of the tree
+def create_code(root_node): # HuffmanNode -> list
+# Returns coded string for each leaf in proper index of list
+    # initialize list of 256 empty strings
+    # calls create_code_helper with the root_node, an empty string, and the list
+    # returns the updated list
+    l1 = [""]*256
+    create_code_helper(root_node, "", l1)
+    return l1
+
+
+# root_node is a HuffmanNode that represents the HuffmanTree
+# l1 is a list that holds the codes of the characters in the tree
+# str is a string that keeps track of the code for a given node
+def create_code_helper(node, str, l1): # HuffmanNode string list -> List
+# Traverses Huffman Tree and returns an array of strings using 0's and 1's
+    # if node is None, return
+    # if node has neither a left or right attribute, return add the code to the list
+    # if node has a left attribute, add '0' to string and recursively call traverse_tree
+        # with the left node and updated string
+    # if node has a right attribute add '1' to string and recursively call traverse_tree
+             # with the right node and updated string
+    if node==None:
+        return
+    if (node.left==node.right==None):
+        l1[node.char] = str
+    if node.left:
+        create_code_helper(node.left, str + '0', l1)
+    if node.right:
+        create_code_helper(node.right, str + '1', l1)
+
+
+
+# Takes the ordered list of frequencies and the code for each char and creates output string
+# List List -> String
+def create_out_string(text, codes):
+    # Initializes empty string
+    # Traverses ordered list
+    # Adds to string the code for the tuple at index 0 multiplied by tuple of index 1
+    # Returns string
+    out = ""
+    for char in text:
+        out+=codes[ord(char)]
+    return out
+
+
+
+# Returns ASCII values and associated frequencies as a string
+# List -> String
+def create_header(list_of_freqs):
+    # initializes empty string
+    # iterates through list of freqs, and if freq is not zero, adds index and freq to string
+    # returns string
+    st = ''
+    for ch in range(len(list_of_freqs)):
+        if list_of_freqs[ch] != 0:
+            st+= (str(ch) + " " + str(list_of_freqs[ch])+ " ")
+    return (st.strip()+'\n')
+
+
+# Reads an encoded file and returns the list of character frequencies and the code
+# String -> List
+def parse_header(filename):
+    # initializes a list with 256 items
+    # initializes two empty strings
+    # opens an encoded text file for reading, stores header and code
+    # converts header string into temporary list
+    # traverse temporary list, for every 2n items, stores 2n+1 in the 2n index of the 256 item list
+    # returns 256 item list and code as a tuple
+    code = ''
+    freq_list = [0] * 256
+    with open(filename, 'r') as fin:
+        header = fin.readline()
+        temp = fin.readlines()
+        code += code.join(temp)
+    temp = header.split()
+    for n, m in zip(temp[0::2], temp[1::2]):
+        freq_list[int(n)] = int(m)
+    return freq_list, code
+
+
+# traverses an encoded huffman tree and finds the code
+# HuffNode String -> String
+def traverse_tree(root, code):
+    # assign a temporary variable to the root parameter
+    # create a list to hold the characters in the tree
+    # traverse code
+    # if a 1, go to the right of the tree
+    # if a 0, go to the left of the tree
+    # if the node is a leaf, add its character to the list
+    # convert the list into a string and return
+    temp = root
+    out_str = []
+    for n in code:
+        if int(n) == 1:
+            temp = temp.right
+        elif int(n) == 0:
+            temp = temp.left
+        if temp.right == None and temp.left == None:
+            out_str.append(chr(temp.char))
+            temp=root
+    return ''.join(out_str)
+
+
+
+
+
+
+
+
