@@ -1,0 +1,140 @@
+
+from stack_array import StackArray
+
+
+class PostfixFormatException(Exception):
+    pass
+
+
+# input_str is a String that represents the postfix expression to be evaluated
+
+# Evalutes a postfix expression
+# String -> Float
+def postfix_eval(input_str):
+    stack = StackArray(30)
+    l = input_str.split()
+    for n in l:
+        try:
+            stack.push(int(n))
+        except ValueError:
+            try:
+                y = stack.pop()
+                x = stack.pop()
+            except:
+                raise PostfixFormatException("Insufficient operands.")
+            if n == '^':
+                stack.push(x ** y)
+            elif n == '*':
+                stack.push(x * y)
+            elif n == '/':
+                if y==0:
+                    raise ValueError("Can't divide by zero.")
+                stack.push(x / y)
+            elif n == '+':
+                stack.push(x + y)
+            elif n == '-':
+                stack.push(x - y)
+            elif n == '>>':
+                stack.push(x >> y)
+            elif n == '<<':
+                stack.push(x << y)
+            else:
+                raise PostfixFormatException("Invalid token.")
+    temp = stack.pop()
+    if not stack.is_empty():
+        raise PostfixFormatException("Too many operands.")
+    return temp
+
+
+# Determines if a character is an operator
+# String -> Boolean
+def is_operator(ch):
+    if ch == '+' or ch == '-' or ch == '/' or ch == '*' or \
+            ch == '/' or ch == '^' or ch == '>>' or ch == '<<':
+        return True
+    return False
+
+
+# Returns the precednece of an operator in the form of a numerical value
+# String -> int
+def get_precedence(op):
+    if op == '^' or op == '>>' or op == '<<':
+        return 3
+    if op == '*' or op == "/":
+        return 2
+    if op == '+' or op == '-':
+        return 1
+
+
+# Determines if an operand is left-associative or not
+# String -> Boolean
+def is_left_associative(op):
+    if op == '^':
+        return False
+    return True
+
+
+# output_str is a String that represents the evaluted postfix expression
+# input_str is a String that represents the infix expression to be evaluated
+# ch is a single-character string that represents each element in the infix expression, which is in turn evaluated
+# o1 is an integrer that represents the first operand in the infix expression
+# o2 is an integrer that represents the second operand in the infix expression
+
+# Converts an infix expression to an equivalent postfix expression
+# String -> String
+def infix_to_postfix(input_str):
+    inp = input_str.split()
+    stack = StackArray(30)
+    output_str = ''
+    for ch in inp:
+        try:
+            output_str += str(int(ch)) + " "
+        except ValueError:
+            if ch == '(':
+                stack.push(ch)
+            elif ch == ')':
+                while stack.peek() != '(':
+                    output_str += stack.pop() + " "
+                stack.pop()
+            elif is_operator(ch):
+                o1 = ch
+                if not stack.is_empty():
+                    while is_operator(stack.peek()) and \
+                            (is_left_associative(o1) and (get_precedence(o1) <= get_precedence(stack.peek()))) \
+                            or ((not is_left_associative(o1)) and get_precedence(o1) < get_precedence(stack.peek())):
+                        output_str += stack.pop() + " "
+                stack.push(o1)
+    while not stack.is_empty():
+        output_str += stack.pop() + " "
+    return output_str
+
+
+# output_str is a String that represents the evaluted postfix expression
+# input_str is a String that represents the prefix expression to be evaluated
+# stack is an instance of a StackArray object
+# ch is a single-character string that represents each element in the prefix expression, which is in turn evaluated
+# op1 is an integrer that represents the first operand in the prefix expression
+# op2 is an integrer that represents the second operand in the prefix expression
+
+# Converts a prefix expression to an equivalent postfix expression
+# String -> String
+def prefix_to_postfix(input_str):
+    l = reverse(input_str.split())
+    stack = StackArray(30)
+    for ch in l:
+        try:
+            stack.push(int(ch))
+        except:
+            if is_operator(ch):
+                op1 = stack.pop()
+                op2 = stack.pop()
+                temp = str(op1) + " " + str(op2) + " "+ str(ch)
+                stack.push(temp)
+    return stack.pop()
+
+
+# Reverses a list
+# List -> List
+def reverse(l):
+    if len(l) == 0: return []
+    return [l[-1]] + reverse(l[:-1])
