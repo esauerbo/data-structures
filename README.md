@@ -2,35 +2,35 @@
 A series of python implementations of various data structures. 
 
 # Table of Contents
-Binary Search Tree
+## Binary Search Tree
     binary 
     queue-array
     test-cases
-Expression Eval
+## Expression Eval
     exp-eval
     stack-array
     test-cases
-Heap
+## Heap
     max-heap-sort
     test-cases
-Huffman Code
-Ordered List
+## Huffman Code
+## Ordered List
     doubly-linked-list
     test-cases
-Queue
+## Queue
     array
     linked-list
     test-cases
-Sorts
+## Sorts
     linked-list-queue
     quicksort
     sort-test-cases
     various-sorts
-Stack
+## Stack
      linked-list
      array
      test Cases
-Topological Sort
+## Topological Sort
     t-sort
     test-cases
     
